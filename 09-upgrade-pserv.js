@@ -1,10 +1,12 @@
 /** @param {NS} ns */
+import { termColor } from "./modules/term-color.js";
 export async function main(ns) {
-    // How much RAM each purchased server will have. In this case, it'll
-    // be 8GB.
-    var ram = 64;
+    // Upgrade to this amount of ram.
+    var ram = 128;
     // Iterator we'll use for our loop
     var i = 0;
+    var success = [];
+    var fail = [];
 
     // Continuously try to purchase servers until we've reached the maximum
     // amount of servers
@@ -18,10 +20,13 @@ export async function main(ns) {
             // If we have enough money, then:
             //  1. Purchase upgrade
             ns.upgradePurchasedServer(hostname, ram);
-            ns.tprint("Buying upgrade for " + hostname + " for $" + cost);
-            ++i;
+            success.push(hostname);
         } else {
-            ns.tprint("Cannot afford upgrade for " + hostname + "; $" + cost);
+            fail.push(hostname);
+            await ns.sleep(60000);
         }
+        ++i;
     }
+    (ns).tprintf(termColor.green + "Bought upgrades for: " + success);
+    (ns).tprintf(termColor.red + "Could not upgrade:" + fail + termColor.reset);
 }

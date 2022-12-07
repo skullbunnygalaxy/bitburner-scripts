@@ -1,50 +1,27 @@
 /** @param {NS} ns */
+import { termColor } from "./modules/term-color.js";
+import { list_servers } from "./modules/list-servers.js";
+import { getThreads } from "./modules/get-threads";
+import { portCheck } from "./modules/port-check";
+
 export async function main(ns) {
-    // Array of all servers that don't need any ports opened
-    // to gain root access. These have 16 GB of RAM
-    var servers0Port = [
-        "n00dles",
-        "foodnstuff",
-        "sigma-cosmetics",
-        "joesguns",
-        "hong-fang-tea",
-        "harakiri-sushi",
-        "nectar-net"];
 
-    // Array of all servers that only need 1 port opened
-    // to gain root access. These have 32 GB of RAM
-    var servers1Port = ["neo-net",
-        "zer0",
-        "max-hardware",
-        "iron-gym"];
+    const servers = list_servers(ns).filter(s => (ns.getServerRequiredHackingLevel(s) <= ns.getHackingLevel()));
 
-    // Copy our scripts onto each server that requires 0 ports
-    // to gain root access. Then use nuke() to gain admin access and
-    // run the scripts.
-    for (var i = 0; i < servers0Port.length; ++i) {
-        var serv = servers0Port[i];
-
+    for (var i = 0; i < servers.length; ++i) {
+        var serv = servers[i];
+        const script = "02-mid-hack.js"
+        const thd = getThreads(ns, serv);
         ns.killall(serv);
-        ns.scp("mid-hack.js", serv);
+        await ns.sleep(6000);
+        ns.scp(script, serv);
+        portCheck(ns, serv);
         ns.nuke(serv);
-        ns.exec("mid-hack.js", serv, 6);
-    }
-
-    // Wait until we acquire the "BruteSSH.exe" program
-    while (!ns.fileExists("BruteSSH.exe")) {
-        await ns.sleep(60000);
-    }
-
-    // Copy our scripts onto each server that requires 1 port
-    // to gain root access. Then use brutessh() and nuke()
-    // to gain admin access and run the scripts.
-    for (var i = 0; i < servers1Port.length; ++i) {
-        var serv = servers1Port[i];
-
-        ns.killall(serv);
-        ns.scp("mid-hack.js", serv);
-        ns.brutessh(serv);
-        ns.nuke(serv);
-        ns.exec("mid-hack.js", serv, 12);
+        if (thd > 0) {
+            ns.exec(script, serv, thd);
+            ns.tprintf(termColor.green + "Running " + termColor.purple + script + termColor.green + " on " + termColor.eggshell + serv + "." + termColor.reset);
+        } else {
+            ns.tprintf(termColor.purple + serv + termColor.red + " does not have enough ram to run script." + termColor.reset);
+        }
     }
 }

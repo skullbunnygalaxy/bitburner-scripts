@@ -1,37 +1,13 @@
 /** @param {NS} ns */
+import { termColor } from "./modules/term-color.js";
+import { list_servers } from "./modules/list-servers.js";
+
 export async function main(ns) {
-    var serverarray = [
-        "n00dles",
-        "foodnstuff",
-        "sigma-cosmetics",
-        "joesguns",
-        "nectar-net",
-        "hong-fang-tea",
-        "harakiri-sushi",
-        "neo-net",
-        "zer0",
-        "max-hardware",
-        "iron-gym",
-        "phantasy",
-        "silver-helix",
-        "johnson-ortho",
-        "summit-uni",
-        "the-hub",
-        "crush-fitness",
-        "aevum-police",
-        "computek",
-        "omega-net",
-        "netlink",
-        "millenium-fitness",
-        "syscore",
-        "rho-construction",
-        "catalyst",
-        "alpha-ent"
-    ];
+    const servers = list_servers(ns).filter(s => ((ns.getServerRequiredHackingLevel(s) <= ns.getHackingLevel()) && (ns.getServerMaxMoney(s) != 0) && (ns.hasRootAccess(s))));
 
     while (true) {
-        for (var i = 0; i < serverarray.length; i) {
-            var target = serverarray[i];
+        for (var i = 0; i < servers.length; i) {
+            var target = servers[i];
             //ns.tprint(target);
             if (ns.getServerSecurityLevel(target) > (ns.getServerMinSecurityLevel(target) + 3)) {
                 await ns.weaken(target);

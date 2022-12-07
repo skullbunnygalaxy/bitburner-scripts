@@ -1,12 +1,12 @@
 /** @param {NS} ns */
-    export async function main(ns) {
-    // How much RAM each purchased server will have. In this case, it'll
-    // be 8GB.
-    var ram = 8;
+import { termColor } from "./modules/term-color.js";
 
+export async function main(ns) {
+    // How much RAM each purchased server will have. 
+    var ram = 8;
     // Iterator we'll use for our loop
     var i = 0;
-
+    const script = "02-mid-hack.js"
     // Continuously try to purchase servers until we've reached the maximum
     // amount of servers
     while (i < ns.getPurchasedServerLimit()) {
@@ -17,9 +17,10 @@
             //  2. Copy our hacking script onto the newly-purchased server
             //  3. Run our hacking script on the newly-purchased server with 3 threads
             //  4. Increment our iterator to indicate that we've bought a new server
-            var hostname = ns.purchaseServer("pserv-" + i, ram);
-            ns.scp("early-hack-template.script", hostname);
-            ns.exec("early-hack-template.script", hostname, 3);
+            var hostname = "pserv-" + i;
+            ns.purchaseServer(hostname, ram);
+            ns.scp(script, hostname);
+            ns.exec(script, hostname, 3);
             ++i;
         }
     }

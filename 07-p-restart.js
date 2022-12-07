@@ -1,52 +1,32 @@
 /** @param {NS} ns */
+import { termColor } from "./modules/term-color.js";
+
 export async function main(ns) {
-    // Array of personal servers
-    var pservers = ["pserv-0",
-        "pserv-1",
-        "pserv-2",
-        "pserv-3",
-        "pserv-4",
-        "pserv-5",
-        "pserv-6",
-        "pserv-7",
-        "pserv-8",
-        "pserv-9",
-        "pserv-10",
-        "pserv-11",
-        "pserv-12",
-        "pserv-13",
-        "pserv-14",
-        "pserv-15",
-        "pserv-16",
-        "pserv-17",
-        "pserv-18",
-        "pserv-19",
-        "pserv-20",
-        "pserv-21",
-        "pserv-22",
-        "pserv-23",
-        "pserv-24"];
-
-
-    // kill current script and run new one
-    for (var i = 0; i < pservers.length; ++i) {
-        var serv = pservers[i];
-
-        const ram = ns.getServerMaxRam(serv)
-        ns.tprint("ram = " + ram);
+    // Iterator we'll use for our loop
+    var i = 0;
+    const script = "02-mid-hack.js"
+    // loop through personal servers
+    while (i < ns.getPurchasedServerLimit()) {
+        var serv = ("pserv-" + i);
+        const ram = ns.getServerMaxRam(serv);
         let thd;
-
         // auto populate thd with relevant number
         if (ns.args[1] !== undefined) {
             thd = ns.args[1]; // defines with optional argument
         } else {
             thd = (Math.floor(ram / 2.6)); // defines based on ram
-            ns.tprint("thd = " + thd);
+            //ns.tprint("thd = " + thd);
         }
-
-        ns.scp("mid-hack.js", serv);
-        ns.killall(serv);
-        ns.exec("mid-hack.js", serv, thd);
+        
+        if (ns.scriptRunning(script, serv)) {
+            // kill current script and run new one
+            ns.kill(script, serv);
+            await ns.sleep(6000); // to ensure full ram access
+            ns.tprint("sleep");
+        } else {
+            ns.tprint("No prior hack running.");
+        }
+        ns.exec(script, serv, thd);
+        i++;
     }
-
 }

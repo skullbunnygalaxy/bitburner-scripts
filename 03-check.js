@@ -1,45 +1,27 @@
 /** @param {NS} ns */
-export async function main(ns) {
-    // Array of servers to check
-    var servers0Port = [
-        "n00dles",
-        "foodnstuff",
-        "sigma-cosmetics",
-        "joesguns",
-        "nectar-net",
-        "hong-fang-tea",
-        "harakiri-sushi",
-        "neo-net",
-        "zer0",
-        "max-hardware",
-        "iron-gym",
-        "phantasy",
-        "silver-helix",
-        "johnson-ortho",
-        "summit-uni",
-        "the-hub",
-        "crush-fitness",
-        "aevum-police",
-        "computek",
-        "omega-net",
-        "netlink",
-        "millenium-fitness",
-        "syscore",
-        "rho-construction",
-        "catalyst",
-        "alpha-ent"
-    ];
+import { termColor } from "./modules/term-color.js";
+import { list_servers } from "./modules/list-servers.js";
 
-    for (var i = 0; i < servers0Port.length; ++i) {
-        var serv = servers0Port[i];
+export async function main(ns) {    
+    const servers = list_servers(ns).filter(s => (ns.getServerMaxMoney(s)!=0));
+
+    for (var i = 0; i < servers.length; ++i) {
+        var serv = servers[i];
         var moneyAvail = Math.round(ns.getServerMoneyAvailable(serv));
-        ns.tprint(
-            "Max Money: " +
-            ns.getServerMaxMoney(serv) +
-            " ... Money available: " +
+        (ns).tprintf(
+            "Money (Max): $" +
+            termColor.green +
             moneyAvail +
-            " ... " +
-            serv
+            termColor.reset +
+            " ($" +
+            termColor.orange +
+            ns.getServerMaxMoney(serv) +
+            termColor.reset +
+            ") ... " +
+            termColor.reset +
+            termColor.cyan + 
+            serv +
+            termColor.reset
         );
     }
 }
