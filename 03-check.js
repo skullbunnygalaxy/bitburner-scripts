@@ -8,19 +8,25 @@ export async function main(ns) {
     for (var i = 0; i < servers.length; ++i) {
         var serv = servers[i];
         var moneyAvail = Math.round(ns.getServerMoneyAvailable(serv));
+        var moneyMax = ns.getServerMaxMoney(serv);
+        var moneyPercent = (((moneyAvail / moneyMax) * 100).toFixed(2) + '%%');
         (ns).tprintf(
-            "Money (Max): $" +
+            "Money (Max): " +
             termColor.green +
-            moneyAvail +
+            ns.nFormat(moneyAvail, "$0.000a") +
             termColor.reset +
-            " ($" +
+            " /" +
             termColor.orange +
-            ns.getServerMaxMoney(serv) +
+            ns.nFormat(moneyMax, "$0.000a") +
             termColor.reset +
-            ") ... " +
+            " [" + 
+            termColor.yellow +
+            moneyPercent +
+            termColor.reset +
+            "] ... " +
             termColor.reset +
             termColor.cyan + 
-            serv +
+            serv + 
             termColor.reset
         );
     }

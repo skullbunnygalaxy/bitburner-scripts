@@ -4,7 +4,10 @@ export async function main(ns) {
     var target;
     if (ns.args[0] !== undefined) {
         target = ns.args[0]; // defines with optional argument
+    } else if (ns.hasRootAccess("joesguns")) {
+        target = "joesguns";
     } else {
+        ns.exec("01-target.js", "joesguns");
         target = "joesguns";
     }
     // Defines how much money a server should have before we hack it
